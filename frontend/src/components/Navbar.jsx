@@ -31,7 +31,7 @@ const Navbar = () => {
       {/* Logo */}
       <Box display="flex" alignItems="center" gap="0.5rem">
         <img src="/src/assets/logo/LearnifyCSLogo.svg" alt="logo" width="28" height="28" />
-        <Typography fontWeight="bold" fontSize="1.25rem" color="#000000">
+        <Typography variant="h6" fontWeight={800} color="#1e293b" sx={{ letterSpacing: '-0.3px' }}>
           LearnifyCS
         </Typography>
       </Box>

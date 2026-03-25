@@ -1,5 +1,5 @@
 // DSASorting.jsx
-import { Box, Typography, Input, Button, Select, MenuItem,Slider } from "@mui/material";
+import { Box, Typography, Input, Button, Select, MenuItem, Slider } from "@mui/material";
 import { FaStop } from "react-icons/fa";
 import { FaPause, FaPlay as FaResume } from "react-icons/fa";
 import { FaPlay } from "react-icons/fa6";
@@ -293,8 +293,7 @@ const DSASorting = () => {
   const [comparisons, setComparisons] = useState(0);
   const [swaps, setSwaps] = useState(0);
   const [isSorting, setIsSorting] = useState(false);
-  const [isPaused, setIsPaused] = useState(false); // NEW state for Pause/Resume
-  // const [speed] = useState(2000); // 2 seconds per step
+  const [isPaused, setIsPaused] = useState(false); // NEW state for Pause/Resume      
   const [input, setInput] = useState(array.join(", "));
   const stopRef = useRef(false);
   const pauseRef = useRef(false); // NEW REF

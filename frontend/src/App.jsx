@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import Login from '../src/pages/Auth/login'
 import Home from './pages/HomePage';
+import Dashboard from './pages/Dashboard';
 import DSALab from './pages/DSA';
 import OSLab from './pages/OS';
 import DBMSLab from './pages/DBMS';
@@ -48,7 +49,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth/login" element={<Login />} />
-        <Route path='/home' element={<Home />} />
+        <Route path='/home' element={<Dashboard />} />
 
 
         {/* ------------------- DSA ------------------- */}

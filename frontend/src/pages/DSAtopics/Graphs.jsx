@@ -209,184 +209,216 @@ const DSAGraphs = () => {
 
   // ---------- Step Generators (BFS / DFS) ----------
   // Each step has: {queue, processed: Set, visitedOrder, current, text}
-  const generateBfsSteps = (source) => {
-    const adj = buildAdjList();
-    const steps = [];
-    const discovered = new Set([source]);
-    const q = [source];
-    const visitedOrder = [];
+  // ---------- BFS ----------
+const generateBfsSteps = (source) => {
+  const adj = buildAdjList();
+  const steps = [];
+  const discovered = new Set([source]);
+  const q = [source];
+  const visitedOrder = [];
+
+  steps.push({
+    queue: [...q],
+    processed: new Set(),
+    visitedOrder: [...visitedOrder],
+    current: null,
+    text: `Let's begin Breadth First Search (BFS) from vertex ${source}. We first mark ${source} as discovered and place it in the queue.`,
+  });
+
+  while (q.length) {
+    const u = q[0];
+    visitedOrder.push(u);
+
     steps.push({
       queue: [...q],
-      processed: new Set(),
+      processed: new Set([...(steps.at(-1)?.processed || []), u]),
       visitedOrder: [...visitedOrder],
-      current: null,
-      text: `Initialize queue with source ${source}. Mark ${source} as discovered.`,
+      current: u,
+      text: `Now we take ${u} from the front of the queue and visit it. Let's explore all its connected neighbors one by one.`,
     });
 
-    while (q.length) {
-      const u = q[0]; // peek front
-      // Step: visit u
-      visitedOrder.push(u);
-      steps.push({
-        queue: [...q],
-        processed: new Set([...(steps.at(-1)?.processed || []), u]),
-        visitedOrder: [...visitedOrder],
-        current: u,
-        text: `Visit ${u}. Dequeue (scratch) ${u}. Explore its neighbors.`,
-      });
-
-      // enqueue neighbors one-by-one with a step for each
-      for (const v of adj[u] || []) {
-        if (!discovered.has(v)) {
-          discovered.add(v);
-          q.push(v);
-          steps.push({
-            queue: [...q],
-            processed: new Set([...(steps.at(-1)?.processed || [])]),
-            visitedOrder: [...visitedOrder],
-            current: u,
-            text: `Neighbor ${v} not discovered → enqueue ${v} and mark discovered.`,
-          });
-        }
-      }
-      // finally remove u from queue (after showing scratches)
-      q.shift();
-      // show the queue after removal (optional step)
-      steps.push({
-        queue: [...q],
-        processed: new Set([...(steps.at(-1)?.processed || [])]),
-        visitedOrder: [...visitedOrder],
-        current: null,
-        text: `Remove ${u} from the queue. Continue.`,
-      });
-    }
-
-    return steps;
-  };
-
-  const generateDfsSteps = (source) => {
-    const adj = buildAdjList();
-    const steps = [];
-    const discovered = new Set([source]);
-    const st = [source]; // stack
-    const visitedOrder = [];
-
-    steps.push({
-      queue: [...st],
-      processed: new Set(),
-      visitedOrder: [],
-      current: null,
-      text: `Initialize stack with source ${source}.`,
-    });
-
-    while (st.length) {
-      const u = st.pop();
-      // when we pop, mark as processed (scratch)
-      steps.push({
-        queue: [...st, u], // show it at top then scratched
-        processed: new Set([...(steps.at(-1)?.processed || []), u]),
-        visitedOrder: [...visitedOrder],
-        current: u,
-        text: `Pop ${u} from stack and visit it.`,
-      });
-
-      if (!visitedOrder.includes(u)) visitedOrder.push(u);
-
-      // push neighbors (LIFO) — to match visual clarity, push one-by-one (reverse optional)
-      const neigh = [...(adj[u] || [])].reverse();
-      for (const v of neigh) {
-        if (!discovered.has(v)) {
-          discovered.add(v);
-          st.push(v);
-          steps.push({
-            queue: [...st],
-            processed: new Set([...(steps.at(-1)?.processed || [])]),
-            visitedOrder: [...visitedOrder],
-            current: u,
-            text: `Neighbor ${v} not discovered → push ${v} onto stack.`,
-          });
-        }
+    for (const v of adj[u] || []) {
+      if (!discovered.has(v)) {
+        discovered.add(v);
+        q.push(v);
+        steps.push({
+          queue: [...q],
+          processed: new Set([...(steps.at(-1)?.processed || [])]),
+          visitedOrder: [...visitedOrder],
+          current: u,
+          text: `Vertex ${v} is not discovered yet, so we mark it as discovered and add it to the queue for future exploration.`,
+        });
+      } else {
+        steps.push({
+          queue: [...q],
+          processed: new Set([...(steps.at(-1)?.processed || [])]),
+          visitedOrder: [...visitedOrder],
+          current: u,
+          text: `Vertex ${v} is already discovered earlier, so we skip it and move to the next neighbor.`,
+        });
       }
     }
-    // final step show visited
+
+    q.shift();
     steps.push({
-      queue: [],
+      queue: [...q],
       processed: new Set([...(steps.at(-1)?.processed || [])]),
       visitedOrder: [...visitedOrder],
       current: null,
-      text: `DFS complete. Visited order: ${visitedOrder.join(" → ")}.`,
+      text: `We have now finished exploring all neighbors of ${u}. So we remove ${u} from the queue and continue to the next vertex.`,
+    });
+  }
+
+  steps.push({
+    queue: [],
+    processed: new Set([...(steps.at(-1)?.processed || [])]),
+    visitedOrder: [...visitedOrder],
+    current: null,
+    text: `BFS traversal is now complete! The final visiting order is: ${visitedOrder.join(" → ")}.`,
+  });
+
+  return steps;
+};
+
+// ---------- DFS ----------
+const generateDfsSteps = (source) => {
+  const adj = buildAdjList();
+  const steps = [];
+  const discovered = new Set([source]);
+  const st = [source];
+  const visitedOrder = [];
+
+  steps.push({
+    queue: [...st],
+    processed: new Set(),
+    visitedOrder: [],
+    current: null,
+    text: `Let's start Depth First Search (DFS) from vertex ${source}. We begin by pushing ${source} onto the stack.`,
+  });
+
+  while (st.length) {
+    const u = st.pop();
+
+    steps.push({
+      queue: [...st, u],
+      processed: new Set([...(steps.at(-1)?.processed || []), u]),
+      visitedOrder: [...visitedOrder],
+      current: u,
+      text: `We pop ${u} from the top of the stack to visit it. Now we will check all its neighbors.`,
     });
 
-    return steps;
-  };
+    if (!visitedOrder.includes(u)) visitedOrder.push(u);
 
-  // ---------- Dijkstra (kept; simple panel output) ----------
-  const generateDijkstraSteps = (source) => {
-    const adj = buildWeightedAdjList();
-    const dist = {};
-    nodes.forEach((n) => (dist[n.id] = Infinity));
-    dist[source] = 0;
+    const neigh = [...(adj[u] || [])].reverse();
+    for (const v of neigh) {
+      if (!discovered.has(v)) {
+        discovered.add(v);
+        st.push(v);
+        steps.push({
+          queue: [...st],
+          processed: new Set([...(steps.at(-1)?.processed || [])]),
+          visitedOrder: [...visitedOrder],
+          current: u,
+          text: `Vertex ${v} is unvisited, so we push it onto the stack. We'll explore it after finishing with ${u}.`,
+        });
+      } else {
+        steps.push({
+          queue: [...st],
+          processed: new Set([...(steps.at(-1)?.processed || [])]),
+          visitedOrder: [...visitedOrder],
+          current: u,
+          text: `Vertex ${v} was already visited earlier, so we skip it and continue.`,
+        });
+      }
+    }
+  }
 
-    const visited = new Set();
-    const steps = [];
-    const visitedOrder = [];
-    const pq = [{ node: source, dist: 0 }];
+  steps.push({
+    queue: [],
+    processed: new Set([...(steps.at(-1)?.processed || [])]),
+    visitedOrder: [...visitedOrder],
+    current: null,
+    text: `DFS traversal is now complete! The visiting order is: ${visitedOrder.join(" → ")}.`,
+  });
+
+  return steps;
+};
+
+// ---------- Dijkstra ----------
+const generateDijkstraSteps = (source) => {
+  const adj = buildWeightedAdjList();
+  const dist = {};
+  nodes.forEach((n) => (dist[n.id] = Infinity));
+  dist[source] = 0;
+
+  const visited = new Set();
+  const steps = [];
+  const visitedOrder = [];
+  const pq = [{ node: source, dist: 0 }];
+
+  steps.push({
+    queue: pq.map((x) => `${x.node}(${x.dist})`),
+    processed: new Set(),
+    visitedOrder: [],
+    current: null,
+    text: `We begin Dijkstra’s algorithm from vertex ${source}. Initially, we set all distances to infinity except for ${source}, which is 0.`,
+  });
+
+  while (pq.length) {
+    pq.sort((a, b) => a.dist - b.dist);
+    const { node: u, dist: du } = pq.shift();
+    if (visited.has(u)) continue;
+
+    visited.add(u);
+    visitedOrder.push(u);
 
     steps.push({
       queue: pq.map((x) => `${x.node}(${x.dist})`),
-      processed: new Set(),
-      visitedOrder: [],
-      current: null,
-      text: `Initialize priority queue with (${source}, 0).`,
+      processed: new Set([...(steps.at(-1)?.processed || []), `${u}(${du})`]),
+      visitedOrder: [...visitedOrder],
+      current: u,
+      text: `Now we pick vertex ${u} with the smallest distance value (${du}). This means ${u} now has its shortest path finalized.`,
     });
 
-    while (pq.length) {
-      // extract-min
-      pq.sort((a, b) => a.dist - b.dist);
-      const { node: u, dist: du } = pq.shift();
-      if (visited.has(u)) continue;
-
-      visited.add(u);
-      visitedOrder.push(u);
-
-      steps.push({
-        queue: pq.map((x) => `${x.node}(${x.dist})`),
-        processed: new Set([...(steps.at(-1)?.processed || []), `${u}(${du})`]),
-        visitedOrder: [...visitedOrder],
-        current: u,
-        text: `Extract ${u} with current distance ${du}. Mark as finalized.`,
-      });
-
-      for (const { node: v, weight: w } of adj[u] || []) {
-        if (!visited.has(v) && du + w < dist[v]) {
-          dist[v] = du + w;
-          pq.push({ node: v, dist: dist[v] });
-          steps.push({
-            queue: pq.map((x) => `${x.node}(${x.dist})`),
-            processed: new Set([...(steps.at(-1)?.processed || [])]),
-            visitedOrder: [...visitedOrder],
-            current: u,
-            text: `Relax edge ${u}→${v} (${w}). Update dist[${v}] = ${dist[v]}. Push to PQ.`,
-          });
-        }
+    for (const { node: v, weight: w } of adj[u] || []) {
+      if (!visited.has(v) && du + w < dist[v]) {
+        dist[v] = du + w;
+        pq.push({ node: v, dist: dist[v] });
+        steps.push({
+          queue: pq.map((x) => `${x.node}(${x.dist})`),
+          processed: new Set([...(steps.at(-1)?.processed || [])]),
+          visitedOrder: [...visitedOrder],
+          current: u,
+          text: `Checking neighbor ${v} from ${u}. The new distance (${du}+${w}=${dist[v]}) is smaller, so we update it and add ${v} back into the priority queue.`,
+        });
+      } else {
+        steps.push({
+          queue: pq.map((x) => `${x.node}(${x.dist})`),
+          processed: new Set([...(steps.at(-1)?.processed || [])]),
+          visitedOrder: [...visitedOrder],
+          current: u,
+          text: `Checking neighbor ${v}. The new path through ${u} is not shorter, so we keep the existing distance ${dist[v]}.`,
+        });
       }
     }
+  }
 
-    steps.push({
-      queue: [],
-      processed: new Set([...(steps.at(-1)?.processed || [])]),
-      visitedOrder: [...visitedOrder],
-      current: null,
-      text:
-        "Dijkstra complete. Distances: " +
-        Object.entries(dist)
-          .map(([k, v]) => `${k}:${v}`)
-          .join(", ") +
-        ".",
-    });
+  steps.push({
+    queue: [],
+    processed: new Set([...(steps.at(-1)?.processed || [])]),
+    visitedOrder: [...visitedOrder],
+    current: null,
+    text:
+      `Dijkstra’s algorithm completed! The shortest distance from ${source} to every vertex is:\n` +
+      Object.entries(dist)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(", ") +
+      `.`,
+  });
 
-    return steps;
-  };
+  return steps;
+};
+
 
   // ---------- Animation Runner ----------
   const playSteps = (steps, speed = 1000) => {
@@ -450,7 +482,7 @@ const DSAGraphs = () => {
     <>
       <Box display={"flex"} justifyContent={"center"} width={"100%"} gap={2}>
         <Box width={"80%"} gap={2} display={"flex"} flexDirection={"column"}>
-          <Box bgcolor={"#ffffff"} height={"480px"} borderRadius={2} p={3}>
+          <Box bgcolor={"#ffffff"} height={"480px"} borderRadius={2} p={2}>
             <Typography variant="h6" fontWeight={600}>
               Interactive Graph Builder
             </Typography>

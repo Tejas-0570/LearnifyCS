@@ -1,29 +1,31 @@
 import { Box, Button, Typography } from '@mui/material';
+import { FaCloud } from "react-icons/fa";
+import { FaShieldAlt } from "react-icons/fa";
+import { FaGraduationCap } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
+import { FaHashtag } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa";
+import { FaList } from "react-icons/fa";
 import { FaBrain } from "react-icons/fa6";
 import { FaRocket } from "react-icons/fa6";
-import { FaCloud } from "react-icons/fa";
-import { GrOptimize } from "react-icons/gr";
 import { FaPuzzlePiece } from "react-icons/fa6";
 import { FaServer } from "react-icons/fa6";
 import { FaRobot } from "react-icons/fa6";
 import { FaGamepad } from "react-icons/fa6";
-import { FaShieldAlt } from "react-icons/fa";
-import { FaGraduationCap } from "react-icons/fa";
-import { FaList } from "react-icons/fa";
-import { BsStack } from "react-icons/bs";
-import { TbBinaryTreeFilled } from "react-icons/tb";
-import { TbCaretUpDownFilled } from "react-icons/tb";
-import { FaSearch } from "react-icons/fa";
-import { FaHashtag } from "react-icons/fa";
 import { FaLeaf } from "react-icons/fa6";
-import { GoGraph } from "react-icons/go";
 import { FaArrowRotateLeft } from "react-icons/fa6";
 import { FaExclamation } from "react-icons/fa6";
-import { FaRegEye } from "react-icons/fa";
 import { FaPlay } from "react-icons/fa6";
 import { FaCode } from "react-icons/fa6";
+import { BsStack } from "react-icons/bs";
+import { TbBinaryTreeFilled, TbCaretUpDownFilled } from "react-icons/tb";
+import { GoGraph } from "react-icons/go";
+import { GrOptimize } from "react-icons/gr";
 
 const DSAIntro = () => {
+  const handleStartLearning = () => {
+    window.location.href = '/dsa/array';
+  };
   return (
     <>
       <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} mt={3}>
@@ -381,7 +383,7 @@ const DSAIntro = () => {
       </Box>
 
       <Box display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} mt={6} mb={3}>
-        <Button sx={{ textTransform: "none", p: 1.5, width: '25%', bgcolor: '#4a90e2', color: '#ffffff', borderRadius: 2.5, fontSize:'18px' ,'&:hover': { bgcolor: '#367bbe' } }} onClick={''}><FaPlay style={{ marginRight: 5 }} />Start Learning - Array</Button>
+        <Button sx={{ textTransform: "none", p: 1.5, width: '25%', bgcolor: '#4a90e2', color: '#ffffff', borderRadius: 2.5, fontSize:'18px' ,'&:hover': { bgcolor: '#367bbe' } }} onClick={handleStartLearning}><FaPlay style={{ marginRight: 5 }} />Start Learning - Array</Button>
         <Typography variant='body1' color='text.secondary' mt={2}>Begin your DSA journey with fundamental array operations</Typography>
       </Box>
 
