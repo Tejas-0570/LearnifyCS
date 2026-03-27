@@ -15,7 +15,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.1",
     "@mui/material": "^7.1.1",
-    "axios": "^1.10.0",
+    "axios": "^1.13.6",
     "framer-motion": "^12.23.12",
     "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",

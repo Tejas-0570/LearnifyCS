@@ -1,189 +1,233 @@
-import Navbar from '../../components/Navbar';
-import loginImage from "../../assets/illustrate/login.png"
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-    Box,
-    Button,
-    Checkbox,
-    FormControlLabel,
-    Tab,
-    Tabs,
-    TextField,
-    Typography,
-    Divider,
+  Box, Typography, TextField, Button,
+  Tab, Tabs, Divider, Alert, CircularProgress,
 } from '@mui/material';
 import { FcGoogle } from 'react-icons/fc';
+import { useAuth } from '../context/Authcontext';
+// import Navbar from '../components/Navbar';
+import Navbar from '../../components/Navbar'
+import loginImage from '../../assets/illustrate/login.png';
 
 const Login = () => {
-    const [tab, setTab] = useState(0);
+  const navigate = useNavigate();
+  const { login, register } = useAuth();
 
-    const handleChange = (event, newValue) => {
-        setTab(newValue);
-    };
-    return (
-        <>
-            <Navbar />
-            <Box display={"flex"} alignItems="center" justifyContent="space-around" minHeight="100vh" sx={{
-                background: 'linear-gradient(135deg, #e9f5fd 0%, #ffffff 100%)',
+  const [tab, setTab]         = useState(0); // 0 = login, 1 = register
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState('');
 
+  // Login fields
+  const [loginEmail, setLoginEmail]       = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
 
-            }}>
-                <Box>
-                    <Typography
-                        variant="h4"
-                        fontWeight="bold"
-                        color="#174BCD"
-                        mb={3}
-                        sx={{
-                            fontSize: {
-                                xs: '2rem', // ~32px on mobile
-                                md: '3rem',   // ~48px on desktop
-                            },
-                            lineHeight: 1.2,
-                            fontWeight: 800
-                        }}
-                    >
-                        Join Our Learning <br /> Community
-                    </Typography>
-                    <Typography
-                        variant="body1"
-                        color="text.secondary"
-                        maxWidth="600px"
-                        mx="auto"
-                    >
-                        Access interactive labs, practice coding, and master computer science concepts with our comprehensive platform.
-                    </Typography>
-                    <Box
-                        component="img"
-                        src={loginImage}
-                        alt="Illustration"
-                        sx={{
-                            width: '100%',
-                            maxWidth: '600px',
-                            height: 'auto',
-                            mt: 4,
-                            borderRadius: 2,
-                            boxShadow: 3,
-                        }}
-                    />
-                </Box>
-                <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-                    <Box
-                        maxWidth={400}
-                        mx="auto"
-                        mt={8}
-                        px={4}
-                        py={5}
-                        borderRadius={5}
-                        boxShadow={3}
-                        bgcolor="#fff"
-                    >
-                        {/* Tabs */}
-                        <Tabs
-                            value={tab}
-                            onChange={handleChange}
-                            variant="fullWidth"
-                            sx={{ mb: 3, borderRadius: 4, bgcolor: '#f3f4f6', minHeight: 'auto' }}
-                            TabIndicatorProps={{ style: { display: 'none' } }}
-                        >
-                            <Tab
-                                label="Login"
-                                sx={{
-                                    fontWeight: 600,
-                                    borderRadius: 2,
-                                    m: 0.7,
-                                    backgroundColor: tab === 0 ? '#ffffff' : 'transparent',
-                                    color: tab === 0 ? 'black' : 'gray',
-                                    minHeight: 'auto',
-                                    py: 1.2
-                                }}
-                            />
-                            <Tab
-                                label="Create Account"
-                                sx={{
-                                    fontWeight: 600,
-                                    borderRadius: 2,
-                                    m: 0.7,
-                                    backgroundColor: tab === 1 ? '#ffffff' : 'transparent',
-                                    color: tab === 1 ? 'black' : 'gray',
-                                    minHeight: 'auto',
-                                    py: 1.2
-                                }}
-                            />
-                        </Tabs>
+  // Register fields
+  const [regName, setRegName]           = useState('');
+  const [regEmail, setRegEmail]         = useState('');
+  const [regPassword, setRegPassword]   = useState('');
+  const [regConfirm, setRegConfirm]     = useState('');
 
-                        {/* Login Form */}
-                        {tab === 0 && (
-                            <>
-                                <TextField fullWidth margin="normal" label="Email Address" placeholder="Enter your email" />
-                                <TextField fullWidth margin="normal" label="Password" placeholder="Enter your password" type="password" />
+  const handleTabChange = (_, newVal) => {
+    setTab(newVal);
+    setError('');
+  };
 
-                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                                    <FormControlLabel control={<Checkbox />} label="Remember me" />
-                                    <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>Forgot password?</Typography>
-                                </Box>
+  // ── Login submit ────────────────────────────────────────────────────────────
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    if (!loginEmail || !loginPassword) {
+      return setError('Please fill in all fields');
+    }
+    setLoading(true);
+    try {
+      await login(loginEmail, loginPassword);
+      navigate('/home');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                                <Button
-                                    href='/home'
-                                    variant="contained"
-                                    fullWidth
-                                    sx={{ backgroundColor: '#3b82f6', borderRadius: 3, textTransform: 'none', fontWeight: 600 }}
-                                >
-                                    Sign In
-                                </Button>
+  // ── Register submit ─────────────────────────────────────────────────────────
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError('');
+    if (!regName || !regEmail || !regPassword || !regConfirm) {
+      return setError('Please fill in all fields');
+    }
+    if (regPassword !== regConfirm) {
+      return setError('Passwords do not match');
+    }
+    if (regPassword.length < 6) {
+      return setError('Password must be at least 6 characters');
+    }
+    setLoading(true);
+    try {
+      await register(regName, regEmail, regPassword);
+      navigate('/home');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                                <Divider sx={{ my: 3 }}>or</Divider>
+  return (
+    <>
+      <Navbar />
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-around"
+        minHeight="100vh"
+        sx={{ background: 'linear-gradient(135deg, #e9f5fd 0%, #ffffff 100%)', px: 3 }}
+      >
+        {/* Left — illustration */}
+        <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+          <Typography variant="h4" fontWeight={800} color="#174BCD" mb={2} sx={{ lineHeight: 1.2 }}>
+            Join Our Learning <br /> Community
+          </Typography>
+          <Typography variant="body1" color="text.secondary" maxWidth={480} mb={4} sx={{ lineHeight: 1.7 }}>
+            Access interactive labs, practice coding, and master computer science concepts
+            with our comprehensive platform.
+          </Typography>
+          <Box
+            component="img"
+            src={loginImage}
+            alt="Learning illustration"
+            sx={{ width: '100%', maxWidth: 480, height: 'auto', borderRadius: 3, boxShadow: 3 }}
+          />
+        </Box>
 
-                                <Button
-                                    variant="outlined"
-                                    fullWidth
-                                    startIcon={<FcGoogle />}
-                                    sx={{ textTransform: 'none', borderRadius: 3 }}
-                                >
-                                    Continue with Google
-                                </Button>
-                            </>
-                        )}
+        {/* Right — form card */}
+        <Box sx={{ width: '100%', maxWidth: 420, mx: 'auto' }}>
+          <Box sx={{ bgcolor: '#fff', borderRadius: 4, boxShadow: 3, px: 4, py: 5 }}>
 
-                        {/* Signup Form */}
-                        {tab === 1 && (
-                            <>
-                                <TextField fullWidth margin="normal" label="Full Name" placeholder="Enter your full name" />
-                                <TextField fullWidth margin="normal" label="Email Address" placeholder="Enter your email" />
-                                <TextField fullWidth margin="normal" label="Password" placeholder="Create a password" type="password" />
-                                <TextField fullWidth margin="normal" label="Confirm Password" placeholder="Confirm your password" type="password" />
+            {/* Error alert */}
+            {error && (
+              <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+                {error}
+              </Alert>
+            )}
 
-                                <FormControlLabel
-                                    control={<Checkbox />}
-                                    label={<Typography variant="body2">I agree to the Terms of Service and Privacy Policy</Typography>}
-                                />
+            {/* Tabs */}
+            <Tabs
+              value={tab}
+              onChange={handleTabChange}
+              variant="fullWidth"
+              sx={{ mb: 3, borderRadius: 4, bgcolor: '#f3f4f6', minHeight: 'auto' }}
+              TabIndicatorProps={{ style: { display: 'none' } }}
+            >
+              {['Login', 'Create Account'].map((label, i) => (
+                <Tab
+                  key={label}
+                  label={label}
+                  sx={{
+                    fontWeight: 600, borderRadius: 2, m: 0.7,
+                    bgcolor: tab === i ? '#ffffff' : 'transparent',
+                    color: tab === i ? '#000' : 'gray',
+                    minHeight: 'auto', py: 1.2,
+                    textTransform: 'none',
+                  }}
+                />
+              ))}
+            </Tabs>
 
-                                <Button
-                                    variant="contained"
-                                    fullWidth
-                                    sx={{ backgroundColor: '#3b82f6', borderRadius: 3, textTransform: 'none', fontWeight: 600 }}
-                                >
-                                    Sign Up
-                                </Button>
+            {/* ── LOGIN FORM ── */}
+            {tab === 0 && (
+              <Box component="form" onSubmit={handleLogin}>
+                <TextField
+                  fullWidth margin="normal" label="Email Address" type="email"
+                  value={loginEmail} onChange={e => setLoginEmail(e.target.value)}
+                  disabled={loading}
+                />
+                <TextField
+                  fullWidth margin="normal" label="Password" type="password"
+                  value={loginPassword} onChange={e => setLoginPassword(e.target.value)}
+                  disabled={loading}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  disabled={loading}
+                  sx={{
+                    mt: 2, py: 1.3, borderRadius: 3,
+                    textTransform: 'none', fontWeight: 700, fontSize: 15,
+                    bgcolor: '#2563eb',
+                    '&:hover': { bgcolor: '#1d4ed8' },
+                  }}
+                >
+                  {loading ? <CircularProgress size={22} sx={{ color: '#fff' }} /> : 'Sign In'}
+                </Button>
 
-                                <Divider sx={{ my: 3 }}>or</Divider>
+                <Divider sx={{ my: 2.5 }}>or</Divider>
 
-                                <Button
-                                    variant="outlined"
-                                    fullWidth
-                                    startIcon={<FcGoogle />}
-                                    sx={{ textTransform: 'none', borderRadius: 3 }}
-                                >
-                                    Continue with Google
-                                </Button>
-                            </>
-                        )}
-                    </Box>
-                </Box>
+                <Button
+                  variant="outlined" fullWidth startIcon={<FcGoogle />}
+                  sx={{ textTransform: 'none', borderRadius: 3, borderColor: '#e2e8f0', color: '#374151', '&:hover': { bgcolor: '#f8fafc' } }}
+                >
+                  Continue with Google
+                </Button>
+              </Box>
+            )}
 
-            </Box>
-        </>
-    );
-}
+            {/* ── REGISTER FORM ── */}
+            {tab === 1 && (
+              <Box component="form" onSubmit={handleRegister}>
+                <TextField
+                  fullWidth margin="normal" label="Full Name"
+                  value={regName} onChange={e => setRegName(e.target.value)}
+                  disabled={loading}
+                />
+                <TextField
+                  fullWidth margin="normal" label="Email Address" type="email"
+                  value={regEmail} onChange={e => setRegEmail(e.target.value)}
+                  disabled={loading}
+                />
+                <TextField
+                  fullWidth margin="normal" label="Password" type="password"
+                  value={regPassword} onChange={e => setRegPassword(e.target.value)}
+                  disabled={loading}
+                />
+                <TextField
+                  fullWidth margin="normal" label="Confirm Password" type="password"
+                  value={regConfirm} onChange={e => setRegConfirm(e.target.value)}
+                  disabled={loading}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  disabled={loading}
+                  sx={{
+                    mt: 2, py: 1.3, borderRadius: 3,
+                    textTransform: 'none', fontWeight: 700, fontSize: 15,
+                    bgcolor: '#2563eb',
+                    '&:hover': { bgcolor: '#1d4ed8' },
+                  }}
+                >
+                  {loading ? <CircularProgress size={22} sx={{ color: '#fff' }} /> : 'Create Account'}
+                </Button>
+
+                <Divider sx={{ my: 2.5 }}>or</Divider>
+
+                <Button
+                  variant="outlined" fullWidth startIcon={<FcGoogle />}
+                  sx={{ textTransform: 'none', borderRadius: 3, borderColor: '#e2e8f0', color: '#374151', '&:hover': { bgcolor: '#f8fafc' } }}
+                >
+                  Continue with Google
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Box>
+    </>
+  );
+};
 
 export default Login;
