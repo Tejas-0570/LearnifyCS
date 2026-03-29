@@ -10,23 +10,36 @@ const authRoutes = require('./routes/authRoute');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://learnifycs-webapp.vercel.app"
-];
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "https://learnifycs-webapp.vercel.app"
+// ];
 
 
-// ── Middleware ────────────────────────────────────────────────────────────────
+// // ── Middleware ────────────────────────────────────────────────────────────────
+// app.use(cors({
+//   origin: function(origin, callback){
+//     if(!origin || allowedOrigins.includes(origin)){
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true
+// }));
+
 app.use(cors({
-  origin: function(origin, callback){
-    if(!origin || allowedOrigins.includes(origin)){
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: "https://learnifycs-webapp.vercel.app",
   credentials: true
 }));
+app.options("*", cors());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://learnifycs-webapp.vercel.app");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  next();
+});
 
 app.use(express.json());
 
