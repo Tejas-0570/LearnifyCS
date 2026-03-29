@@ -2,6 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../pages/context/Authcontext';
 import { Box, CircularProgress } from '@mui/material';
 
+// Protected route component to protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
