@@ -32,7 +32,7 @@ app.use(cors({
   origin: "https://learnifycs-webapp.vercel.app",
   credentials: true
 }));
-app.options("/*", cors());
+
 
 app.use(express.json());
 
