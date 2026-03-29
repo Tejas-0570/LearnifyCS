@@ -10,14 +10,24 @@ const authRoutes = require('./routes/authRoute');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://learnifycs-webapp.vercel.app"
+];
+
+
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://learnifycs-webapp.vercel.app"
-  ],
+  origin: function(origin, callback){
+    if(!origin || allowedOrigins.includes(origin)){
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
+
 app.use(express.json());
 
 // ── MongoDB ───────────────────────────────────────────────────────────────────
