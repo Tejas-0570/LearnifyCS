@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 
 // const allowedOrigins = [
 //   "http://localhost:5173",
-//   "https://learnifycs-webapp.vercel.app"
+//   "https://learnifycs.vercel.app"
 // ];
 
 
@@ -29,7 +29,7 @@ const PORT = process.env.PORT || 5000;
 // }));
 
 app.use(cors({
-  origin: "https://learnifycs-webapp.vercel.app",
+  origin: "https://learnifycs.vercel.app",
   credentials: true
 }));
 
