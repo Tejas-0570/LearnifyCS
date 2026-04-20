@@ -14,7 +14,8 @@ import { MdHealthAndSafety } from "react-icons/md";
 import { FaDatabase } from "react-icons/fa6";
 import { BiLogoPostgresql } from "react-icons/bi";
 import { FaLeaf } from "react-icons/fa6";
-import { SiOracle } from "react-icons/si";
+// import { SiOracle } from "react-icons/si";
+import { MdStorage } from "react-icons/md";
 import { FaServer } from "react-icons/fa6";
 import { SiRelay } from "react-icons/si";
 import { FaCode } from "react-icons/fa6";
@@ -95,7 +96,7 @@ const DBMSIntro = () => {
 
                                 <Box display={'flex'} alignItems={'center'} justifyContent={'center'} gap={2} mt={2}>
                                     <Box height={'90px'} width={'100%'} bgcolor={'#f3f4f6'} borderRadius={3} display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
-                                        <SiOracle color='#f70000' size={'25px'} />
+                                        <MdStorage color='#f70000' size={'25px'} />
                                         <Typography>Oracle</Typography>
                                     </Box>
                                     <Box height={'90px'} width={'100%'} bgcolor={'#f0fdf4'} borderRadius={3} display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, LinearProgress } from '@mui/material';
 import { useAuth } from '../pages/context/Authcontext';
-import ProfilePopup from '../components/ProfilePopup';
+import DashboardNavbar from '../components/DashboardNavbar';
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 const IconDSA = ({ color }) => (
@@ -168,28 +168,7 @@ const Dashboard = () => {
     <Box sx={{ minHeight:'100vh', bgcolor:'#f8fafc' }}>
 
       {/* ── Navbar ── */}
-      <Box sx={{
-        position:'sticky', top:0, zIndex:100,
-        bgcolor:'rgba(255,255,255,0.95)',
-        borderBottom:'1px solid #e2e8f0',
-        backdropFilter:'blur(10px)',
-      }}>
-        <Box sx={{
-          maxWidth:1200, mx:'auto', px:3,
-          height:60, display:'flex',
-          alignItems:'center', justifyContent:'space-between',
-        }}>
-          <Box display="flex" alignItems="center" gap={1.2}>
-            <Box sx={{ width:10, height:10, borderRadius:'50%', bgcolor:'#2563eb' }} />
-            <Typography variant="h6" fontWeight={800} color="#1e293b" sx={{ letterSpacing:'-0.3px' }}>
-              LearnifyCS
-            </Typography>
-          </Box>
-
-          {/* ProfilePopup replaces static avatar */}
-          <ProfilePopup size={36} fontSize={13} />
-        </Box>
-      </Box>
+      <DashboardNavbar />
 
       {/* ── Hero ── */}
       <Box sx={{
